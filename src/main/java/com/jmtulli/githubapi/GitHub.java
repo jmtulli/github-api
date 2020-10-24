@@ -7,23 +7,32 @@
  */
 package com.jmtulli.githubapi;
 
+import static com.jmtulli.githubapi.util.ApplicationConstants.URL_GITHUB;
+
+import java.util.Map;
+
+import com.jmtulli.githubapi.data.FileCounters;
 import com.jmtulli.githubapi.web.Repository;
 
-public class GitHubApi {
+public class GitHub {
 
-  public static void startProcess() {
+  public static Map<String, FileCounters> startProcess(String gitUser, String gitRepository) {
 
     long startTimer = System.nanoTime();
 
-    String gitRepository = "https://github.com/jmtulli/trustly_api";
+    // String gitRepository = "https://github.com/jmtulli/trustly_api";
     // String gitRepository = "https://github.com/OpenFeign/feign";
 
-    new Repository(gitRepository).process();
+    String gitUrl = URL_GITHUB + "/" + gitUser + "/" + gitRepository;
+    System.out.println("url: " + gitUrl);
+
+    Map<String, FileCounters> map = new Repository(gitUrl).process();
 
     long endTimer = System.nanoTime();
 
     System.out.println("Time: " + (endTimer - startTimer));
 
+    return map;
   }
 
 }

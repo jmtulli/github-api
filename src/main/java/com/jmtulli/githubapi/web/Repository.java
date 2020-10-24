@@ -1,5 +1,9 @@
 package com.jmtulli.githubapi.web;
 
+import static com.jmtulli.githubapi.util.ApplicationConstants.PATTERN_BRANCH_NAME;
+import static com.jmtulli.githubapi.util.ApplicationConstants.PATTERN_CLASS_BRANCH_NAME;
+import static com.jmtulli.githubapi.util.ApplicationConstants.URL_ALL_BRANCHES;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,8 +26,6 @@ import com.jmtulli.githubapi.data.FileCounters;
  */
 
 public class Repository {
-  private static final String PATTERN_BRANCH_NAME = ">(.*)<\\/a>";
-  private static final String URL_ALL_BRANCHES = "/branches/all";
 
   private Branch branch;
   private Map<String, FileCounters> resultMap = new HashMap<>();
@@ -33,7 +35,7 @@ public class Repository {
     this.gitRepository = gitRepository;
   }
 
-  public void process() {
+  public Map<String, FileCounters> process() {
     this.branch = new Branch(gitRepository);
     ArrayList<String> allBranches = getAllBranchesNames();
     allBranches.forEach(branchName -> {
@@ -45,6 +47,7 @@ public class Repository {
     resultMap.entrySet().forEach(entry -> {
       System.out.println(entry.getKey() + ": Lines = " + entry.getValue().getLines() + "; Size = " + entry.getValue().getSize());
     });
+    return resultMap;
 
   }
 
@@ -56,18 +59,20 @@ public class Repository {
 
     InputStream response = new Connection(gitRepository + URL_ALL_BRANCHES).getResponse();
 
-    BufferedReader reader = new BufferedReader(new InputStreamReader(response));
-    try {
-      while ((lineReader = reader.readLine()) != null) {
-        if (lineReader.contains("<a class=\"branch-name")) {
-          matcher = pattern.matcher(lineReader);
-          if (matcher.find()) {
-            allBranches.add(matcher.group(1));
+    if (response != null) {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(response));
+      try {
+        while ((lineReader = reader.readLine()) != null) {
+          if (lineReader.contains(PATTERN_CLASS_BRANCH_NAME)) {
+            matcher = pattern.matcher(lineReader);
+            if (matcher.find()) {
+              allBranches.add(matcher.group(1));
+            }
           }
         }
+      } catch (IOException e) {
+        e.printStackTrace();
       }
-    } catch (IOException e) {
-      e.printStackTrace();
     }
 
     return allBranches;

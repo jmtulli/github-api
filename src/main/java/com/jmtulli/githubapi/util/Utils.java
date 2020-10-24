@@ -6,6 +6,7 @@ import java.util.List;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import static com.jmtulli.githubapi.util.ApplicationConstants.*;
 
 public class Utils {
 
@@ -35,7 +36,7 @@ public class Utils {
 
   public static String getFileExtension(String fullFilename) {
     String filename = fullFilename.substring(fullFilename.lastIndexOf("/") + 1);
-    return filename.lastIndexOf(".") >= 0 ? filename.substring(filename.lastIndexOf(".") + 1) : "NO_EXTENSION";
+    return filename.lastIndexOf(".") >= 0 ? filename.substring(filename.lastIndexOf(".") + 1) : STRING_NO_EXTENSION;
   }
 
 }

@@ -15,7 +15,7 @@ public class FileCounters {
   }
 
   public double getSize() {
-    return size;
+    return Math.round(size*100.0)/100.0;
   }
 
   public void addLines(int newLines) {
