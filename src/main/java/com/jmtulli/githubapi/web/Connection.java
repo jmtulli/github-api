@@ -11,6 +11,7 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 
 import com.jmtulli.githubapi.exception.GitHubApiException;
+import com.jmtulli.githubapi.exception.GitUrlNotFoundException;
 
 public class Connection {
 
@@ -25,6 +26,7 @@ public class Connection {
   public Connection(String url, String headerName, String headerValue) {
     this.url = url;
     this.httpClient = HttpClient.newHttpClient();
+
     if (headerName != null && headerValue != null) {
       this.request = HttpRequest.newBuilder().uri(URI.create(url)).setHeader(headerName, headerValue).build();
     } else {
@@ -36,14 +38,16 @@ public class Connection {
     HttpResponse<InputStream> response;
     try {
       response = httpClient.send(request, BodyHandlers.ofInputStream());
-      if (response.statusCode() == 404) {
-        throw new GitHubApiException(url.substring(0, url.indexOf(URL_ALL_BRANCHES)));
+      if (response.statusCode() == 200) {
+        return response.body();
+      } else if (response.statusCode() == 404) {
+        throw new GitUrlNotFoundException(url.substring(0, url.indexOf(URL_ALL_BRANCHES)));
       }
+      throw new GitHubApiException(response.headers().allValues("status").get(0));
     } catch (IOException | InterruptedException e) {
       e.printStackTrace();
       return null;
     }
-    return response.body();
   }
 
 }
