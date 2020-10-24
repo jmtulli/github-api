@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GitHubController {
 
-  @GetMapping
+  @GetMapping(path = "/hello")
   public String Hello() {
     return "Hello";
   }
