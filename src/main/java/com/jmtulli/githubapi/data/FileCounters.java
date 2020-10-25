@@ -1,6 +1,8 @@
 package com.jmtulli.githubapi.data;
 
-public class FileCounters {
+import java.io.Serializable;
+
+public class FileCounters implements Serializable {
 
   private int lines;
   private double size;
@@ -15,7 +17,7 @@ public class FileCounters {
   }
 
   public double getSize() {
-    return Math.round(size*100.0)/100.0;
+    return Math.round(size * 100.0) / 100.0;
   }
 
   public void addLines(int newLines) {

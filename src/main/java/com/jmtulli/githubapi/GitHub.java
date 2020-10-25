@@ -19,6 +19,7 @@ public class GitHub {
   public static Map<String, FileCounters> startProcess(String gitUser, String gitRepository) {
 
     long startTimer = System.nanoTime();
+    System.out.println("proc: " + Runtime.getRuntime().availableProcessors());
 
     // String gitRepository = "https://github.com/jmtulli/trustly_api";
     // String gitRepository = "https://github.com/OpenFeign/feign";
