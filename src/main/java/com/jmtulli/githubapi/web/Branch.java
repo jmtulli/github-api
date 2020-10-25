@@ -12,7 +12,6 @@ import static com.jmtulli.githubapi.util.ApplicationConstants.URL_FIND;
 import static com.jmtulli.githubapi.util.ApplicationConstants.URL_GITHUB;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -22,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.jmtulli.githubapi.data.FileCounters;
+import com.jmtulli.githubapi.exception.GitHubApiException;
 import com.jmtulli.githubapi.util.Utils;
 
 public class Branch {
@@ -57,8 +57,9 @@ public class Branch {
           }
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       e.printStackTrace();
+      throw new GitHubApiException(e.getMessage());
     }
 
     return treeList;
@@ -73,8 +74,9 @@ public class Branch {
 
     try {
       filesPath = reader.readLine();
-    } catch (IOException e) {
+    } catch (Exception e) {
       e.printStackTrace();
+      throw new GitHubApiException(e.getMessage());
     }
 
     return filesPath;
@@ -131,8 +133,9 @@ public class Branch {
           }
         }
       }
-    } catch (NumberFormatException | IOException e) {
+    } catch (Exception e) {
       e.printStackTrace();
+      throw new GitHubApiException(e.getMessage());
     }
     return Optional.empty();
   }

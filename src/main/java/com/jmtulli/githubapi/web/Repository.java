@@ -5,7 +5,6 @@ import static com.jmtulli.githubapi.util.ApplicationConstants.PATTERN_CLASS_BRAN
 import static com.jmtulli.githubapi.util.ApplicationConstants.URL_ALL_BRANCHES;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.jmtulli.githubapi.data.FileCounters;
+import com.jmtulli.githubapi.exception.GitHubApiException;
 
 /**
  * This performs all the work. It makes an HTTP request, checks the response, and then gathers up
@@ -70,8 +70,9 @@ public class Repository {
             }
           }
         }
-      } catch (IOException e) {
+      } catch (Exception e) {
         e.printStackTrace();
+        throw new GitHubApiException(e.getMessage());
       }
     }
 
