@@ -15,7 +15,7 @@ import com.jmtulli.githubapi.exception.GitUrlNotFoundException;
 
 public class Connection {
 
-  private HttpClient httpClient;
+  private HttpClient httpClient = null;
   private HttpRequest request;
   private String url;
 
@@ -25,7 +25,9 @@ public class Connection {
 
   public Connection(String url, String headerName, String headerValue) {
     this.url = url;
-    this.httpClient = HttpClient.newHttpClient();
+    if (this.httpClient == null) {
+      this.httpClient = HttpClient.newHttpClient();
+    }
 
     if (headerName != null && headerValue != null) {
       this.request = HttpRequest.newBuilder().uri(URI.create(url)).setHeader(headerName, headerValue).build();
