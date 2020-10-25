@@ -2,6 +2,7 @@ package com.jmtulli.githubapi.web;
 
 import static com.jmtulli.githubapi.util.ApplicationConstants.URL_ALL_BRANCHES;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -43,7 +44,7 @@ public class Connection {
         throw new GitUrlNotFoundException(url.substring(0, url.indexOf(URL_ALL_BRANCHES)));
       }
       throw new GitHubApiException(response.headers().allValues("status").get(0));
-    } catch (Exception e) {
+    } catch (InterruptedException | IOException e) {
       e.printStackTrace();
       throw new GitHubApiException(e.getMessage());
     }
