@@ -12,6 +12,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
 public class Receiver {
+
   public void start() {
     ConnectionFactory factory = new ConnectionFactory();
     try {
@@ -28,6 +29,7 @@ public class Receiver {
       DeliverCallback deliverCallback = (consumerTag, delivery) -> {
         String message = new String(delivery.getBody(), "UTF-8");
         System.out.println("mensagem recebida: " + message);
+        doWork(message);
       };
       channel.basicConsume("testeQName", deliverCallback, consumerTag -> {
       });
@@ -36,4 +38,14 @@ public class Receiver {
       e.printStackTrace();
     }
   }
+
+  public static void doWork(String task) {
+    System.out.println("Do work - " + Thread.currentThread().getName() + " - Task " + task);
+    try {
+      Thread.sleep(3000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+  }
+
 }

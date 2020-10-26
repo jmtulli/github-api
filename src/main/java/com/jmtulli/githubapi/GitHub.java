@@ -41,9 +41,29 @@ public class GitHub {
 
     System.out.println("Time: " + (endTimer - startTimer));
 
+
+    // ExecutorService executor = Executors.newCachedThreadPool();
+    //
+    // for (String url : filesUrl) {
+    // System.out.println("files " + url);
+    // executor.submit(() -> new Thread(new Runnable() {
+    // @Override
+    // public void run() {
+    // processResultForFile(url, resultMap);
+    // }
+    // }).start());
+    // }
+
+    new Receiver().start();
+    new Receiver().start();
+    new Receiver().start();
+    new Receiver().start();
+    new Receiver().start();
     new Receiver().start();
 
     ConnectionFactory factory = new ConnectionFactory();
+    String uri = System.getenv("CLOUDAMQP_URL");
+    System.out.println("uri " + uri);
     try {
       factory.setUri("amqp://qgkjffns:0aqoD3P-WBsvN9EPQLfJb-HBPtVt7wBa@coyote.rmq.cloudamqp.com/qgkjffns");
     } catch (KeyManagementException | NoSuchAlgorithmException | URISyntaxException e1) {

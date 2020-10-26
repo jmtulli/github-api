@@ -14,7 +14,7 @@ import com.jmtulli.githubapi.data.FileCounters;
 public class GitHubController {
 
   @GetMapping(path = "/{gitUser}/{repository}")
-  @Cacheable(value = "gitRepo")
+//  @Cacheable(value = "gitRepo")
   public Map<String, FileCounters> startProcess(@PathVariable String gitUser, @PathVariable String repository) {
     return GitHub.startProcess(gitUser, repository);
   }
