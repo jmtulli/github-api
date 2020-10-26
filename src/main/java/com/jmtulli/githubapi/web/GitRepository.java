@@ -8,9 +8,9 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,13 +25,13 @@ import com.jmtulli.githubapi.exception.GitHubApiException;
  * @return whether or not the crawl was successful
  */
 
-public class Repository {
+public class GitRepository {
 
+  private final Map<String, FileCounters> resultMap = new ConcurrentHashMap<>();
   private Branch branch;
-  private Map<String, FileCounters> resultMap = new HashMap<>();
   private String gitRepository;
 
-  public Repository(String gitRepository) {
+  public GitRepository(String gitRepository) {
     this.gitRepository = gitRepository;
   }
 
@@ -44,11 +44,12 @@ public class Repository {
       branch.processResult(filesUrl, resultMap);
     });
 
-    resultMap.entrySet().forEach(entry -> {
-      System.out.println(entry.getKey() + ": Lines = " + entry.getValue().getLines() + "; Size = " + entry.getValue().getSize());
-    });
-    return resultMap;
+    // resultMap.entrySet().forEach(entry -> {
+    // System.out.println(entry.getKey() + ": Lines = " + entry.getValue().getLines() + "; Size = "
+    // + entry.getValue().getSize());
+    // });
 
+    return resultMap;
   }
 
   private ArrayList<String> getAllBranchesNames() {
@@ -74,6 +75,8 @@ public class Repository {
         e.printStackTrace();
         throw new GitHubApiException(e.getMessage());
       }
+    } else {
+      throw new GitHubApiException("Error getting branches of repository " + gitRepository + ".");
     }
 
     return allBranches;

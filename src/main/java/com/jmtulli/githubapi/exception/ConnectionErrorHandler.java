@@ -14,7 +14,7 @@ public class ConnectionErrorHandler {
     return "Url " + ex.getMessage() + " not found";
   }
 
-  @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+  @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
   @ExceptionHandler(GitHubApiException.class)
   public String handle(GitHubApiException ex) {
     return ex.getMessage();

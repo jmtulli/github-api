@@ -17,6 +17,8 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,20 +48,23 @@ public class Branch {
 
     InputStream response = new Connection(gitRepository + URL_FIND + branchName).getResponse();
 
-    BufferedReader reader = new BufferedReader(new InputStreamReader(response));
+    if (response != null) {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(response));
 
-    try {
-      while ((lineReader = reader.readLine()) != null) {
-        if (lineReader.contains(PATTERN_CLASS_TREE_FINDER)) {
-          matcher = pattern.matcher(lineReader);
-          if (matcher.find()) {
-            treeList = matcher.group(1);
+      try {
+        while ((lineReader = reader.readLine()) != null) {
+          if (lineReader.contains(PATTERN_CLASS_TREE_FINDER)) {
+            matcher = pattern.matcher(lineReader);
+            if (matcher.find()) {
+              treeList = matcher.group(1);
+            }
           }
         }
+      } catch (Exception e) {
+        throw new GitHubApiException(e.getMessage());
       }
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new GitHubApiException(e.getMessage());
+    } else {
+      throw new GitHubApiException("Error getting file tree list of repository " + gitRepository + ".");
     }
 
     return treeList;
@@ -70,13 +75,17 @@ public class Branch {
 
     InputStream response = new Connection(URL_GITHUB + fileTree, HEADER_NAME, HEADER_VALUE).getResponse();
 
-    BufferedReader reader = new BufferedReader(new InputStreamReader(response));
+    if (response != null) {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(response));
 
-    try {
-      filesPath = reader.readLine();
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new GitHubApiException(e.getMessage());
+      try {
+        filesPath = reader.readLine();
+      } catch (Exception e) {
+        e.printStackTrace();
+        throw new GitHubApiException(e.getMessage());
+      }
+    } else {
+      throw new GitHubApiException("Error getting file paths of repository " + gitRepository + ".");
     }
 
     return filesPath;
@@ -88,14 +97,35 @@ public class Branch {
   }
 
   public void processResult(List<String> filesUrl, Map<String, FileCounters> resultMap) {
-    filesUrl.forEach(fileUrl -> {
-      String fileExtension = Utils.getFileExtension(fileUrl);
+    filesUrl.forEach(url -> processResultForFile(url, resultMap));
+    
+//    ExecutorService executor = Executors.newCachedThreadPool();
+//
+//    for (String url : filesUrl) {
+//      System.out.println("files " + url);
+//      executor.submit(() -> new Thread(new Runnable() {
+//        @Override
+//        public void run() {
+//          processResultForFile(url, resultMap);
+//        }
+//      }).start());
+//    }
 
-      InputStream response = new Connection(fileUrl).getResponse();
+    System.out.println("fim");
+
+  }
+
+  private void processResultForFile(String fileUrl, Map<String, FileCounters> resultMap) {
+//    InputStream response = new Connection().getConcurrentResponse(fileUrl);
+    InputStream response = new Connection(fileUrl).getResponse();
+
+    if (response != null) {
       BufferedReader reader = new BufferedReader(new InputStreamReader(response));
 
       Optional<FileCounters> counters = parseFileResponse(reader);
+
       if (counters.isPresent()) {
+        String fileExtension = Utils.getFileExtension(fileUrl);
         if (resultMap.containsKey(fileExtension)) {
           resultMap.get(fileExtension).addLines(counters.get().getLines());
           resultMap.get(fileExtension).addSize(counters.get().getSize());
@@ -103,8 +133,9 @@ public class Branch {
           resultMap.put(fileExtension, counters.get());
         }
       }
-
-    });
+    } else {
+      throw new GitHubApiException("Error parsing file " + fileUrl + ".");
+    }
   }
 
   private Optional<FileCounters> parseFileResponse(BufferedReader reader) {
@@ -134,7 +165,6 @@ public class Branch {
         }
       }
     } catch (Exception e) {
-      e.printStackTrace();
       throw new GitHubApiException(e.getMessage());
     }
     return Optional.empty();

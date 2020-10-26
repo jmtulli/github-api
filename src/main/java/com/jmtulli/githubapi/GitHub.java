@@ -12,14 +12,13 @@ import static com.jmtulli.githubapi.util.ApplicationConstants.URL_GITHUB;
 import java.util.Map;
 
 import com.jmtulli.githubapi.data.FileCounters;
-import com.jmtulli.githubapi.web.Repository;
+import com.jmtulli.githubapi.web.GitRepository;
 
 public class GitHub {
 
   public static Map<String, FileCounters> startProcess(String gitUser, String gitRepository) {
 
     long startTimer = System.nanoTime();
-    System.out.println("proc: " + Runtime.getRuntime().availableProcessors());
 
     // String gitRepository = "https://github.com/jmtulli/trustly_api";
     // String gitRepository = "https://github.com/OpenFeign/feign";
@@ -27,7 +26,7 @@ public class GitHub {
     String gitUrl = URL_GITHUB + "/" + gitUser + "/" + gitRepository;
     System.out.println("url: " + gitUrl);
 
-    Map<String, FileCounters> map = new Repository(gitUrl).process();
+    Map<String, FileCounters> map = new GitRepository(gitUrl).process();
 
     long endTimer = System.nanoTime();
 
