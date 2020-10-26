@@ -55,11 +55,6 @@ public class GitHub {
     // }
 
     new Receiver().start();
-    new Receiver().start();
-    new Receiver().start();
-    new Receiver().start();
-    new Receiver().start();
-    new Receiver().start();
 
     ConnectionFactory factory = new ConnectionFactory();
     String uri = System.getenv("CLOUDAMQP_URL");
