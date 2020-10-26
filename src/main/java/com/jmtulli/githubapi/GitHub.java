@@ -10,11 +10,14 @@ package com.jmtulli.githubapi;
 import static com.jmtulli.githubapi.util.ApplicationConstants.URL_GITHUB;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import com.jmtulli.githubapi.data.FileCounters;
+import com.jmtulli.githubapi.queue.Receiver;
 import com.jmtulli.githubapi.web.GitRepository;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -32,27 +35,32 @@ public class GitHub {
     String gitUrl = URL_GITHUB + "/" + gitUser + "/" + gitRepository;
     System.out.println("url: " + gitUrl);
 
-    Map<String, FileCounters> map = null;//new GitRepository(gitUrl).process();
+    Map<String, FileCounters> map = null;// new GitRepository(gitUrl).process();
 
     long endTimer = System.nanoTime();
 
     System.out.println("Time: " + (endTimer - startTimer));
-    
+
+    new Receiver().start();
+
     ConnectionFactory factory = new ConnectionFactory();
-    factory.setHost("coyote.rmq.cloudamqp.com");
-    factory.setPort(1883);
-    factory.setUsername("qgkjffns:qgkjffns");
-    factory.setPassword("0aqoD3P-WBsvN9EPQLfJb-HBPtVt7wBa");
+    try {
+      factory.setUri("amqp://qgkjffns:0aqoD3P-WBsvN9EPQLfJb-HBPtVt7wBa@coyote.rmq.cloudamqp.com/qgkjffns");
+    } catch (KeyManagementException | NoSuchAlgorithmException | URISyntaxException e1) {
+      System.out.println("URI erro");
+      e1.printStackTrace();
+    }
     try {
       Connection connection = factory.newConnection();
       Channel channel = connection.createChannel();
-      channel.queueDeclare("teste", false,false,false,null);
-      channel.basicPublish("", "teste", null, "Hello".getBytes());
+      channel.queueDeclare("testeQName", false, false, false, null);
+      channel.basicPublish("", "testeQName", null, "Message2".getBytes());
       System.out.println("Msg enviada");
     } catch (IOException | TimeoutException e) {
+      System.out.println("Connection erro");
       e.printStackTrace();
     }
-    
+
 
     return map;
   }
