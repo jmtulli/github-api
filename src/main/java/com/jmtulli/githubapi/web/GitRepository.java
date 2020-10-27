@@ -53,7 +53,7 @@ public class GitRepository {
     allBranches.forEach(branchName -> {
       String relativePaths = branch.getBranchPaths(branchName);
       List<String> filesUrl = branch.getFilesUrl(relativePaths, branchName);
-      System.out.println("gitrepo got file url: " + gitRepository);
+      System.out.println("gitrepo got file url size: " + filesUrl.size());
       branch.processResult(filesUrl, resultMap.get(gitRepository));
       System.out.println("gitrepo finish process: " + gitRepository);
     });
