@@ -87,7 +87,7 @@ public class Branch {
   public Map<String, FileCounters> processResult(List<String> filesUrl, Map<String, FileCounters> resultMap) {
 //    filesUrl.forEach(url -> processResultForFile(url, resultMap));
     for (int i = 0; i< filesUrl.size();i++) {
-      if (i/10 == 0) {
+      if (i%50 == 0) {
         System.out.println("\nsleep\n");
         try {
           Thread.sleep(1000);
