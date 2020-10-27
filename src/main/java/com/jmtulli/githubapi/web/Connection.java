@@ -2,13 +2,14 @@ package com.jmtulli.githubapi.web;
 
 import static com.jmtulli.githubapi.util.ApplicationConstants.URL_ALL_BRANCHES;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import com.jmtulli.githubapi.exception.GitHubApiException;
 import com.jmtulli.githubapi.exception.GitUrlNotFoundException;
@@ -34,14 +35,15 @@ public class Connection {
 
   public InputStream getResponse() {
     try {
-      HttpResponse<InputStream> response = httpClient.send(request, BodyHandlers.ofInputStream());
+      CompletableFuture<HttpResponse<InputStream>> futureResponse = httpClient.sendAsync(request, BodyHandlers.ofInputStream());
+      HttpResponse<InputStream> response = futureResponse.get();
       if (response.statusCode() == 200) {
         return response.body();
       } else if (response.statusCode() == 404) {
         throw new GitUrlNotFoundException(url.substring(0, url.indexOf(URL_ALL_BRANCHES)));
       }
       throw new GitHubApiException(response.headers().firstValue("status").orElse("Connection error."));
-    } catch (InterruptedException | IOException e) {
+    } catch (InterruptedException | ExecutionException e) {
       throw new GitHubApiException("Connection error. " + e.getMessage());
     }
   }
