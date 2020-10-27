@@ -88,6 +88,7 @@ public class Branch {
 //    filesUrl.forEach(url -> processResultForFile(url, resultMap));
     for (int i = 0; i< filesUrl.size();i++) {
       if (i/10 == 0) {
+        System.out.println("\nsleep\n");
         try {
           Thread.sleep(1000);
         } catch (InterruptedException e) {
