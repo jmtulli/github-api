@@ -20,6 +20,7 @@ public class ConnectionErrorHandler {
   @ExceptionHandler(GitHubApiException.class)
   public String handle(GitHubApiException ex) {
     Receiver.errorsFound = ex.getMessage();
+    System.out.println("erro internal server");
     return ex.getMessage();
   }
 

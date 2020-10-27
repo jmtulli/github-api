@@ -9,10 +9,13 @@ package com.jmtulli.githubapi;
 
 import static com.jmtulli.githubapi.util.ApplicationConstants.URL_GITHUB;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -52,7 +55,15 @@ public class GitHubAPI {
     if (!currentIdList.contains(id)) {
       return ResponseEntity.notFound().build();
     }
-
+//    if (!currentIdList.contains(id)) {
+//      HttpHeaders httpHeaders = new HttpHeaders();
+//      try {
+//        httpHeaders.setLocation(new URI("http://www.google.com.br"));
+//      } catch (URISyntaxException e) {
+//        e.printStackTrace();
+//      }
+//      return new ResponseEntity(httpHeaders, HttpStatus.TEMPORARY_REDIRECT);
+//    }
     if (Receiver.getResults(id)) {
       currentIdList.remove(id);
       return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing completed... Check results on: https://jmtulli-githubapi.herokuapp.com/  http://localhost:8080/" + URL_GITHUB);
@@ -64,6 +75,7 @@ public class GitHubAPI {
     // return (GitHubAPI.processResult(id) != null) ? ResponseEntity.ok(GitHubAPI.processResult(id))
     // : ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Check
     // progress on: https://jmtulli-githubapi.herokuapp.com/ http://localhost:8080/" + id);
+
 
 
   }
