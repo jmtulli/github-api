@@ -9,6 +9,8 @@ package com.jmtulli.githubapi;
 
 import static com.jmtulli.githubapi.util.ApplicationConstants.URL_GITHUB;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -22,6 +24,7 @@ import com.jmtulli.githubapi.queue.Sender;
 import com.jmtulli.githubapi.web.GitRepository;
 
 public class GitHubAPI {
+  public static final List<String> idList = new ArrayList<>();
 
   public static ResponseEntity startProcess(String gitUser, String gitRepository) {
 
@@ -32,9 +35,10 @@ public class GitHubAPI {
     System.out.println("url: " + gitUrl);
 
     if (GitRepository.isValidGitUrl(gitUrl)) {
+      idList.add(id);
       new Receiver(gitUrl).listen();
       new Sender(gitUrl).send(id);
-      return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Check result on: https://jmtulli-githubapi.herokuapp.com/" + id);
+      return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Check result on: https://jmtulli-githubapi.herokuapp.com/  http://localhost:8080/" + id);
     }
     long endTimer = System.nanoTime();
     System.out.println("Time: " + (endTimer - startTimer));
