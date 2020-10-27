@@ -25,13 +25,17 @@ import com.rabbitmq.client.Channel;
 
 public class GitHubAPI {
   private static final ConcurrentMap<String, ProcessStatus> currentIdList = new ConcurrentHashMap<>();
+  private static Channel channel;
 
-  public static ResponseEntity startProcess(String gitUser, String gitRepository) {
-    String gitUrl = URL_GITHUB + "/" + gitUser + "/" + gitRepository;
+  public static Channel getC() {
+    return channel;
+  }
+  public static ResponseEntity startProcess(String gitUser, String gitRepositoryName) {
+    String gitRepository = URL_GITHUB + "/" + gitUser + "/" + gitRepositoryName;
 
-    System.out.println("API Start url: " + gitUrl);
+    System.out.println("API Start url: " + gitRepository);
 
-    String id = Integer.toString(gitUrl.hashCode());
+    String id = Integer.toString(gitRepository.hashCode());
     if (id == null)
       throw new GitHubApiException("Error getting GitHub Repository Url.");
 
@@ -40,7 +44,7 @@ public class GitHubAPI {
       System.out.println("API novo id " + id);
     }
 
-    GitRepository repository = new GitRepository(gitUrl);
+    GitRepository repository = new GitRepository(gitRepository);
 
     if (ProcessStatus.DONE == currentIdList.get(id)) {
       System.out.println("API id done: " + id);
@@ -50,14 +54,14 @@ public class GitHubAPI {
     if (repository.isValidGitUrl()) {
       if (ProcessStatus.NEW == currentIdList.get(id)) {
         System.out.println("API vai iniciar fila novo id " + id);
-        Channel channel = Connection.getRabbitChannel();
-        new Receiver(gitUrl).listen(channel);
-        new Sender(gitUrl).send(id, channel);
+        channel = Connection.getRabbitChannel();
+        new Receiver(gitRepository).listen(channel);
+        new Sender(gitRepository).send(id, channel);
       }
       return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Check progress on: https://jmtulli-githubapi.herokuapp.com/  http://localhost:8080/" + id);
     }
 
-    throw new GitHubApiException("Git repository " + gitUrl + " not found.");
+    throw new GitHubApiException("Git repository " + gitRepository + " not found.");
   }
 
   public static ResponseEntity processResult(String id) {
