@@ -19,7 +19,9 @@ import com.jmtulli.githubapi.data.ProcessStatus;
 import com.jmtulli.githubapi.exception.GitHubApiException;
 import com.jmtulli.githubapi.queue.Receiver;
 import com.jmtulli.githubapi.queue.Sender;
+import com.jmtulli.githubapi.web.Connection;
 import com.jmtulli.githubapi.web.GitRepository;
+import com.rabbitmq.client.Channel;
 
 public class GitHubAPI {
   private static final ConcurrentMap<String, ProcessStatus> currentIdList = new ConcurrentHashMap<>();
@@ -45,8 +47,9 @@ public class GitHubAPI {
 
     if (repository.isValidGitUrl()) {
       if (ProcessStatus.NEW == currentIdList.get(id)) {
-        new Receiver(gitUrl).listen();
-        new Sender(gitUrl).send(id);
+        Channel channel = Connection.getRabbitChannel();
+        new Receiver(gitUrl).listen(channel);
+        new Sender(gitUrl).send(id, channel);
       }
       return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Check progress on: https://jmtulli-githubapi.herokuapp.com/  http://localhost:8080/" + id);
     }

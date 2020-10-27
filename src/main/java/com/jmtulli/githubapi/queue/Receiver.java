@@ -4,19 +4,17 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.TimeoutException;
 
 import com.jmtulli.githubapi.GitHubAPI;
 import com.jmtulli.githubapi.data.ProcessStatus;
 import com.jmtulli.githubapi.exception.GitHubApiException;
 import com.jmtulli.githubapi.web.GitRepository;
 import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
 public class Receiver {
-//  private static final ConcurrentMap<String, ConcurrentMap<String, FileCounters>> resultsById = new ConcurrentHashMap<>();
+  // private static final ConcurrentMap<String, ConcurrentMap<String, FileCounters>> resultsById =
+  // new ConcurrentHashMap<>();
   private static final Set<String> completedIds = Collections.synchronizedSet(new HashSet<>());
   public static String errorsFound = null;
   private final String gitUrl;
@@ -25,12 +23,8 @@ public class Receiver {
     this.gitUrl = gitUrl;
   }
 
-  public void listen() {
-    ConnectionFactory factory = RabbitFactory.getFactory();
-
+  public void listen(Channel channel) {
     try {
-      Connection connection = factory.newConnection();
-      Channel channel = connection.createChannel();
       channel.queueDeclare(gitUrl, false, false, true, null);
       System.out.println("aguardando mensagens...");
       DeliverCallback deliverCallback = (consumerTag, delivery) -> {
@@ -40,7 +34,7 @@ public class Receiver {
       };
       channel.basicConsume(gitUrl, deliverCallback, consumerTag -> {
       });
-    } catch (IOException | TimeoutException e) {
+    } catch (IOException e) {
       throw new GitHubApiException("Error getting queue. " + e.getMessage());
     }
   }
@@ -53,12 +47,12 @@ public class Receiver {
       repository.process();
       GitHubAPI.markCompleted(id);
     }
-//    completedIds.add(id);
-//    if (repository.getResultMap() == null) {
-      // resultsById.put(id, repository.getResultMap());
-      // } else {
-      // resultsById.put(id, repository.process());
-//    }
+    // completedIds.add(id);
+    // if (repository.getResultMap() == null) {
+    // resultsById.put(id, repository.getResultMap());
+    // } else {
+    // resultsById.put(id, repository.process());
+    // }
     System.out.println("Fim " + Thread.currentThread().getName() + " - id: " + id);
     // Map<String, FileCounters> map = new GitRepository(gitUrl).process();
     // map.entrySet().forEach(entry -> {

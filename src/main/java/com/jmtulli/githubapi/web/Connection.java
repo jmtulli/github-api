@@ -2,6 +2,7 @@ package com.jmtulli.githubapi.web;
 
 import static com.jmtulli.githubapi.util.ApplicationConstants.URL_ALL_BRANCHES;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -10,9 +11,13 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import com.jmtulli.githubapi.exception.GitHubApiException;
 import com.jmtulli.githubapi.exception.GitUrlNotFoundException;
+import com.jmtulli.githubapi.queue.RabbitFactory;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.ConnectionFactory;
 
 public class Connection {
 
@@ -45,6 +50,16 @@ public class Connection {
       throw new GitHubApiException(response.headers().firstValue("status").orElse("Connection error."));
     } catch (InterruptedException | ExecutionException e) {
       throw new GitHubApiException("Connection error. " + e.getMessage());
+    }
+  }
+
+  public static Channel getRabbitChannel() {
+    ConnectionFactory factory = RabbitFactory.getFactory();
+    try {
+      com.rabbitmq.client.Connection connection = factory.newConnection();
+      return connection.createChannel();
+    } catch (TimeoutException | IOException e) {
+      throw new GitHubApiException("Error creating queue connection.");
     }
   }
 
