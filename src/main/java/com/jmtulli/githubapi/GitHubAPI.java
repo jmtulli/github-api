@@ -26,11 +26,12 @@ public class GitHubAPI {
 
   public static ResponseEntity startProcess(String gitUser, String gitRepository) {
     String gitUrl = URL_GITHUB + "/" + gitUser + "/" + gitRepository;
-    
-    System.out.println(gitUrl.substring(URL_GITHUB.length()+1));
-    
+
+    System.out.println(gitUrl.substring(URL_GITHUB.length() + 1));
+
     String id = Integer.toString(gitUrl.hashCode());
-    if (id == null) throw new GitHubApiException("Error getting GitHub Repository Url.");
+    if (id == null)
+      throw new GitHubApiException("Error getting GitHub Repository Url.");
 
     if (!currentIdList.containsKey(id)) {
       currentIdList.put(id, ProcessStatus.NEW);
@@ -43,8 +44,10 @@ public class GitHubAPI {
     }
 
     if (repository.isValidGitUrl()) {
-      new Receiver(gitUrl).listen();
-      new Sender(gitUrl).send(id);
+      if (ProcessStatus.NEW == currentIdList.get(id)) {
+        new Receiver(gitUrl).listen();
+        new Sender(gitUrl).send(id);
+      }
       return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Check progress on: https://jmtulli-githubapi.herokuapp.com/  http://localhost:8080/" + id);
     }
 
@@ -67,8 +70,7 @@ public class GitHubAPI {
     // }
 
     if (ProcessStatus.DONE == currentIdList.get(id)) {
-      return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing completed... Check results on: https://jmtulli-githubapi.herokuapp.com/  http://localhost:8080/" 
-    + URL_GITHUB);
+      return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing completed... Check results on: https://jmtulli-githubapi.herokuapp.com/  http://localhost:8080/" + URL_GITHUB);
     }
 
     // if (Receiver.getResults(id)) {
