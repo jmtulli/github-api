@@ -90,26 +90,19 @@ public class Branch {
   }
 
   private void processResultForFile(String fileUrl, Map<String, FileCounters> resultMap) {
-    System.out.println("branch process file: " + fileUrl);
     InputStream response = new Connection(fileUrl).getResponse();
-    System.out.println("branch process file got response: " + fileUrl);
-    if (response != null) {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(response));
-      System.out.println("branch process file got reader: " + fileUrl);
+    BufferedReader reader = new BufferedReader(new InputStreamReader(response));
 
-      Optional<FileCounters> counters = parseFileResponse(reader);
+    Optional<FileCounters> counters = parseFileResponse(reader);
 
-      if (counters.isPresent()) {
-        String fileExtension = Utils.getFileExtension(fileUrl);
-        if (resultMap.containsKey(fileExtension)) {
-          resultMap.get(fileExtension).addLines(counters.get().getLines());
-          resultMap.get(fileExtension).addSize(counters.get().getSize());
-        } else {
-          resultMap.put(fileExtension, counters.get());
-        }
+    if (counters.isPresent()) {
+      String fileExtension = Utils.getFileExtension(fileUrl);
+      if (resultMap.containsKey(fileExtension)) {
+        resultMap.get(fileExtension).addLines(counters.get().getLines());
+        resultMap.get(fileExtension).addSize(counters.get().getSize());
+      } else {
+        resultMap.put(fileExtension, counters.get());
       }
-    } else {
-      System.out.println("branch null response for " + fileUrl);
     }
   }
 

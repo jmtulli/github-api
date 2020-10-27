@@ -41,23 +41,18 @@ public class GitRepository {
   }
 
   public void process() {
-    System.out.println("gitrepo start process repo: " + gitRepository);
     this.branch = new Branch(gitRepository);
     if (resultMap.get(gitRepository) == null) {
-      System.out.println("gitrepo starting resultMap: " + gitRepository);
       resultMap.put(gitRepository, new ConcurrentHashMap<>());
     }
 
     ArrayList<String> allBranches = getAllBranchesNames();
-    System.out.println("gitrepo size allbranches for " + gitRepository + " = " + allBranches.size());
     allBranches.forEach(branchName -> {
       String relativePaths = branch.getBranchPaths(branchName);
       List<String> filesUrl = branch.getFilesUrl(relativePaths, branchName);
-      System.out.println("gitrepo got file url size: " + filesUrl.size());
       branch.processResult(filesUrl, resultMap.get(gitRepository));
-      System.out.println("gitrepo finish process: " + gitRepository);
     });
-    System.out.println("gitrepo fim process all branches repo " + gitRepository);
+    System.out.println("End of processing files for repository " + gitRepository);
   }
 
   private ArrayList<String> getAllBranchesNames() {

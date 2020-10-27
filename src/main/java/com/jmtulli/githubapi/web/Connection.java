@@ -1,5 +1,6 @@
 package com.jmtulli.githubapi.web;
 
+import static com.jmtulli.githubapi.util.ApplicationConstants.RETRY_TIME_AFTER_TOO_MANY_REQUEST;
 import static com.jmtulli.githubapi.util.ApplicationConstants.URL_ALL_BRANCHES;
 
 import java.io.IOException;
@@ -43,9 +44,7 @@ public class Connection {
       CompletableFuture<HttpResponse<InputStream>> futureResponse = httpClient.sendAsync(request, BodyHandlers.ofInputStream());
       HttpResponse<InputStream> response = futureResponse.get();
       if (response.statusCode() == 429) {
-        System.out.println("\n\nConnection retry\n\n");
-        System.out.println(response.headers().map());
-        Thread.sleep(60000);
+        Thread.sleep(RETRY_TIME_AFTER_TOO_MANY_REQUEST);
         futureResponse = httpClient.sendAsync(request, BodyHandlers.ofInputStream());
         response = futureResponse.get();
       }

@@ -29,7 +29,7 @@ public class GitHubAPI {
   public static ResponseEntity startProcess(String gitUser, String gitRepositoryName) {
     String gitRepository = URL_GITHUB + "/" + gitUser + "/" + gitRepositoryName;
 
-    System.out.println("API Start url: " + gitRepository);
+    System.out.println("Start processing url: " + gitRepository);
 
     String id = Integer.toString(gitRepository.hashCode());
     if (id == null)
@@ -37,19 +37,16 @@ public class GitHubAPI {
 
     if (!currentIdList.containsKey(id)) {
       currentIdList.put(id, ProcessStatus.NEW);
-      System.out.println("API novo id " + id);
     }
 
     GitRepository repository = new GitRepository(gitRepository);
 
     if (ProcessStatus.DONE == currentIdList.get(id)) {
-      System.out.println("API id done: " + id);
       return ResponseEntity.ok(repository.getResultMap());
     }
 
     if (repository.isValidGitUrl()) {
       if (ProcessStatus.NEW == currentIdList.get(id)) {
-        System.out.println("API vai iniciar fila novo id " + id);
         Channel channel = Connection.getRabbitChannel();
         new Receiver(gitRepository).listen(channel);
         new Sender(gitRepository).send(id, channel);
@@ -65,33 +62,11 @@ public class GitHubAPI {
       return ResponseEntity.notFound().build();
     }
 
-    // if (!currentIdList.contains(id)) {
-    // HttpHeaders httpHeaders = new HttpHeaders();
-    // try {
-    // httpHeaders.setLocation(new URI("http://www.google.com.br"));
-    // } catch (URISyntaxException e) {
-    // e.printStackTrace();
-    // }
-    // return new ResponseEntity(httpHeaders, HttpStatus.TEMPORARY_REDIRECT);
-    // }
-
     if (ProcessStatus.DONE == currentIdList.get(id)) {
       return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing completed... Check results on: https://jmtulli-githubapi.herokuapp.com/  http://localhost:8080/" + URL_GITHUB);
     }
 
-    // if (Receiver.getResults(id)) {
-    // currentIdList.remove(id);
-    // return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing completed...
-    // Check results on: https://jmtulli-githubapi.herokuapp.com/ http://localhost:8080/" +
-    // URL_GITHUB);
-    // }
-
     return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Check progress on: https://jmtulli-githubapi.herokuapp.com/  http://localhost:8080/" + id);
-
-    // return (GitHubAPI.processResult(id) != null) ? ResponseEntity.ok(GitHubAPI.processResult(id))
-    // : ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Check
-    // progress on: https://jmtulli-githubapi.herokuapp.com/ http://localhost:8080/" + id);
-
   }
 
   public static ProcessStatus getStatus(String id) {

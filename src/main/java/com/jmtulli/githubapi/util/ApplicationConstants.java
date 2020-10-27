@@ -2,6 +2,7 @@ package com.jmtulli.githubapi.util;
 
 public final class ApplicationConstants {
 
+  public static final Integer RETRY_TIME_AFTER_TOO_MANY_REQUEST = 60000;
   public static final String HEADER_NAME = "X-Requested-With";
   public static final String HEADER_VALUE = "XMLHttpRequest";
   public static final String PATTERN_BRANCH_NAME = ">(.*)<\\/a>";
