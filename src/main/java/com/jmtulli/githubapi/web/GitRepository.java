@@ -19,15 +19,14 @@ import com.jmtulli.githubapi.data.FileCounters;
 import com.jmtulli.githubapi.exception.GitHubApiException;
 
 /**
- * This performs all the work. It makes an HTTP request, checks the response, and then gathers up
- * all the links on the page. Perform a searchForWord after the successful crawl
+ * Responsible to manage the current GitRepository. Manage the branches and keep the result of the
+ * processing.
  * 
- * @param url - The URL to visit
- * @return whether or not the crawl was successful
+ * @author Jose Tulli
+ *
+ * @param gitRepository - The github repository
  */
-
 public class GitRepository {
-
   private static final ConcurrentMap<String, Map<String, FileCounters>> resultMap = new ConcurrentHashMap<>();
   private Branch branch;
   private String gitRepository;
@@ -36,10 +35,20 @@ public class GitRepository {
     this.gitRepository = gitRepository;
   }
 
+  /**
+   * Check if a git url is valid
+   * 
+   * @return boolean - True if the url is valid
+   */
   public boolean isValidGitUrl() {
     return new Connection(gitRepository + URL_ALL_BRANCHES).getResponse() != null;
   }
 
+  /**
+   * Process the given github repository. Loop over each branch and trigger the processing for all
+   * of it's files
+   * 
+   */
   public void process() {
     this.branch = new Branch(gitRepository);
     if (resultMap.get(gitRepository) == null) {
@@ -55,6 +64,11 @@ public class GitRepository {
     System.out.println("End of processing files for repository " + gitRepository);
   }
 
+  /**
+   * Get the names of all the branches of the current repository
+   * 
+   * @return ArrayList - List of all the branches
+   */
   private ArrayList<String> getAllBranchesNames() {
     ArrayList<String> allBranches = new ArrayList<>();
     Pattern pattern = Pattern.compile(PATTERN_BRANCH_NAME);
@@ -81,6 +95,12 @@ public class GitRepository {
     return allBranches;
   }
 
+  /**
+   * Get the result of processing the repository
+   * 
+   * @return Map - Map containing all the file extensions and their respective number of lines and
+   *         sizes
+   */
   public Map<String, FileCounters> getResultMap() {
     return resultMap.get(gitRepository);
   }

@@ -9,6 +9,14 @@ import com.jmtulli.githubapi.web.GitRepository;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DeliverCallback;
 
+/**
+ * Receiver queue responsible for listening to queue requests and trigger repository processing.
+ * 
+ * @author Jose Tulli
+ *
+ * @param gitRepository - Name of the created queue
+ * @return Receiver - This object
+ */
 public class Receiver {
   private final String gitRepository;
 

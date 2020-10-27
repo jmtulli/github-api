@@ -20,6 +20,16 @@ import com.jmtulli.githubapi.queue.RabbitFactory;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
 
+/**
+ * Handles all the HTTP connections of the API.
+ * 
+ * @author Jose Tulli
+ *
+ * @param url - The url of the repository
+ * @param headerName - The name of the header to include in the request
+ * @param headerValue - The value of the header to include in the request
+ * @return Connection - A HTTP connection
+ */
 public class Connection {
 
   private static final HttpClient httpClient = HttpClient.newBuilder().build();
@@ -39,6 +49,12 @@ public class Connection {
     }
   }
 
+  /**
+   * Get HTTP response of the connection. Handles connection error and retry in case of a server
+   * error indicating too many requests.
+   * 
+   * @return InputStream - The response returned by the connection request
+   */
   public InputStream getResponse() {
     try {
       CompletableFuture<HttpResponse<InputStream>> futureResponse = httpClient.sendAsync(request, BodyHandlers.ofInputStream());
@@ -62,6 +78,11 @@ public class Connection {
     }
   }
 
+  /**
+   * Factory for RabbitMQ channel
+   * 
+   * @return Channel - Channel used to get a RabbitMQ queue
+   */
   public static Channel getRabbitChannel() {
     ConnectionFactory factory = RabbitFactory.getFactory();
     try {

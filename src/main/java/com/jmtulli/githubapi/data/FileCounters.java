@@ -2,6 +2,13 @@ package com.jmtulli.githubapi.data;
 
 import java.io.Serializable;
 
+/**
+ * Keep track of the quantity of lines and the total size (in bytes) of the files for a given file
+ * extension.
+ * 
+ * @author Jose Tulli
+ *
+ */
 public class FileCounters implements Serializable {
 
   private int lines;

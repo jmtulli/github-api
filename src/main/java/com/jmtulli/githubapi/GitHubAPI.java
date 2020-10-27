@@ -1,10 +1,3 @@
-/**
- * This performs all the work. It makes an HTTP request, checks the response, and then gathers up
- * all the links on the page. Perform a searchForWord after the successful crawl
- * 
- * @param url - The URL to visit
- * @return whether or not the crawl was successful
- */
 package com.jmtulli.githubapi;
 
 import static com.jmtulli.githubapi.util.ApplicationConstants.URL_GITHUB;
@@ -23,6 +16,16 @@ import com.jmtulli.githubapi.web.Connection;
 import com.jmtulli.githubapi.web.GitRepository;
 import com.rabbitmq.client.Channel;
 
+/**
+ * Processing class of the API. Handles the requests, start the processing tasks for the repository
+ * and return the status to the server.
+ * 
+ * @author Jose Tulli
+ *
+ * @param gitUser - The user name of the github
+ * @param gitRepositoryName - The name of the github repository
+ * @return ResponseEntity - Status of the requests
+ */
 public class GitHubAPI {
   private static final ConcurrentMap<String, ProcessStatus> currentIdList = new ConcurrentHashMap<>();
 
@@ -51,22 +54,23 @@ public class GitHubAPI {
         new Receiver(gitRepository).listen(channel);
         new Sender(gitRepository).send(id, channel);
       }
-      return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Check progress on: https://jmtulli-githubapi.herokuapp.com/  http://localhost:8080/" + id);
+      return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Check progress on: https://jmtulli-githubapi.herokuapp.com/" + id);
     }
 
     throw new GitHubApiException("Git repository " + gitRepository + " not found.");
   }
 
-  public static ResponseEntity processResult(String id) {
+  // Return information to server about the status of the request for a determined repository
+  public static ResponseEntity checkResult(String id) {
     if (!currentIdList.containsKey(id)) {
       return ResponseEntity.notFound().build();
     }
 
     if (ProcessStatus.DONE == currentIdList.get(id)) {
-      return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing completed... Check results on: https://jmtulli-githubapi.herokuapp.com/  http://localhost:8080/" + URL_GITHUB);
+      return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing completed... Make the original request again to get the results.");
     }
 
-    return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Check progress on: https://jmtulli-githubapi.herokuapp.com/  http://localhost:8080/" + id);
+    return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Check progress on: https://jmtulli-githubapi.herokuapp.com/" + id);
   }
 
   public static ProcessStatus getStatus(String id) {

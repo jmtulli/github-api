@@ -24,20 +24,38 @@ import com.jmtulli.githubapi.data.FileCounters;
 import com.jmtulli.githubapi.exception.GitHubApiException;
 import com.jmtulli.githubapi.util.Utils;
 
+/**
+ * Responsible to manage the Github branches.
+ * 
+ * @author Jose Tulli
+ *
+ * @param gitRepository - The github repository
+ */
 public class Branch {
-
   private String gitRepository;
 
   public Branch(String gitRepository) {
     this.gitRepository = gitRepository;
   }
 
+  /**
+   * Get the paths of the files of a given branch
+   * 
+   * @param branchName - Name of the branch
+   * @return String - A String containing the paths for all the files of the branch
+   */
   public String getBranchPaths(String branchName) {
     String treeList = getTreeList(branchName);
     String paths = getPaths(treeList);
     return paths;
   }
 
+  /**
+   * Get the tree list path of the files of a given branch
+   * 
+   * @param branchName - Name of the branch
+   * @return String - A String containing the tree list to get all the files of the branch
+   */
   private String getTreeList(String branchName) {
     String treeList = "";
     Pattern pattern = Pattern.compile(PATTERN_TREE_LIST);
@@ -63,6 +81,12 @@ public class Branch {
     return treeList;
   }
 
+  /**
+   * Get the paths of the files from a tree list
+   * 
+   * @param fileTree - The tree list
+   * @return String - A String containing the list of paths for all the files in this file tree
+   */
   private String getPaths(String fileTree) {
     String filesPath = "";
 
@@ -79,6 +103,13 @@ public class Branch {
     return filesPath;
   }
 
+  /**
+   * Get the full url of the files from a branch
+   * 
+   * @param relativePaths - The relative paths of the files
+   * @param branchName - The name of the branch
+   * @return List - List of the full url of all the files of the branch
+   */
   public List<String> getFilesUrl(String relativePaths, String branchName) {
     String basePath = gitRepository + URL_BLOB + branchName + "/";
     return Utils.parsePaths(basePath, relativePaths);
@@ -89,6 +120,13 @@ public class Branch {
     return resultMap;
   }
 
+  /**
+   * Get the number of lines and size in bytes of the given file
+   * 
+   * @param fileUrl - The full path of the file
+   * @param resultMap - Map containing all the file extensions and their respective number of lines
+   *        and sizes
+   */
   private void processResultForFile(String fileUrl, Map<String, FileCounters> resultMap) {
     InputStream response = new Connection(fileUrl).getResponse();
     BufferedReader reader = new BufferedReader(new InputStreamReader(response));
@@ -106,6 +144,12 @@ public class Branch {
     }
   }
 
+  /**
+   * Parse the document to get the line numbers and the file sizes
+   * 
+   * @param reader - The reader for the document
+   * @return FileCounters - Object to keep line numbers and file sizes
+   */
   private Optional<FileCounters> parseFileResponse(BufferedReader reader) {
     String lineReader;
     int lines = 0;

@@ -8,6 +8,13 @@ import java.security.NoSuchAlgorithmException;
 import com.jmtulli.githubapi.exception.GitHubApiException;
 import com.rabbitmq.client.ConnectionFactory;
 
+/**
+ * Factory for RabbitMQ queues
+ * 
+ * @author Jose Tulli
+ *
+ * @return ConnectionFactory - Factory used to get a connection channel
+ */
 public class RabbitFactory {
 
   public static ConnectionFactory getFactory() {
