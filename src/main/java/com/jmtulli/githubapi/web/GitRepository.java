@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +28,7 @@ import com.jmtulli.githubapi.exception.GitHubApiException;
 
 public class GitRepository {
 
-  private static final Map<String, Map<String, FileCounters>> resultMap = new ConcurrentHashMap<>();
+  private static final ConcurrentMap<String, Map<String, FileCounters>> resultMap = new ConcurrentHashMap<>();
   private Branch branch;
   private String gitRepository;
 
@@ -39,10 +40,10 @@ public class GitRepository {
     return new Connection(gitRepository + URL_ALL_BRANCHES).getResponse() != null;
   }
 
-  public Map<String, FileCounters> process() {
+//  public Map<String, FileCounters> process() {
+    public void process() {
     this.branch = new Branch(gitRepository);
     if (resultMap.get(gitRepository) == null) {
-      System.out.println("null");
       resultMap.put(gitRepository, new ConcurrentHashMap<>());
     }
 
@@ -52,8 +53,9 @@ public class GitRepository {
       List<String> filesUrl = branch.getFilesUrl(relativePaths, branchName);
       branch.processResult(filesUrl, resultMap.get(gitRepository));
     });
+    System.out.println("fim process repo " + gitRepository);
 
-    return resultMap.get(gitRepository);
+//    return resultMap.get(gitRepository);
   }
 
   private ArrayList<String> getAllBranchesNames() {
