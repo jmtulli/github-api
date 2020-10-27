@@ -44,6 +44,11 @@ public class Connection {
       HttpResponse<InputStream> response = futureResponse.get();
       if (response.statusCode() != 200) {
         System.out.println("\n\nConnection retry\n\n");
+        System.out.println(response.statusCode());
+        System.out.println(response.body().toString());
+        System.out.println(response.request().headers());
+        System.out.println(response.headers().map());
+        response.headers().map().forEach( (a,b) -> System.out.println("map " + a + " - " + b));
         futureResponse = httpClient.sendAsync(request, BodyHandlers.ofInputStream());
         response = futureResponse.get();
       }
