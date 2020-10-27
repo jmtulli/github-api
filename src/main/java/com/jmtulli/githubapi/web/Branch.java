@@ -85,7 +85,17 @@ public class Branch {
   }
 
   public Map<String, FileCounters> processResult(List<String> filesUrl, Map<String, FileCounters> resultMap) {
-    filesUrl.forEach(url -> processResultForFile(url, resultMap));
+//    filesUrl.forEach(url -> processResultForFile(url, resultMap));
+    for (int i = 0; i< filesUrl.size();i++) {
+      if (i/10 == 0) {
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+      processResultForFile(filesUrl.get(i), resultMap);
+    }
     return resultMap;
   }
 
