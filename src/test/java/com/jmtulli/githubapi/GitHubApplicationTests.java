@@ -9,5 +9,10 @@ class GitHubApplicationTests {
 	@Test
 	void contextLoads() {
 	}
+	
+	@Test
+	void invalidUrl() {
+	  
+	}
 
 }

@@ -49,14 +49,15 @@ public class Connection {
         futureResponse = httpClient.sendAsync(request, BodyHandlers.ofInputStream());
         response = futureResponse.get();
       }
-      
+
       if (response.statusCode() == 200) {
         return response.body();
       } else if (response.statusCode() == 404) {
         throw new GitUrlNotFoundException(url.substring(0, url.indexOf(URL_ALL_BRANCHES)));
+      } else if (response.statusCode() == 429) {
+        throw new GitHubApiException("Too many request. Please try again later.");
       }
-//      throw new GitHubApiException(response.headers().firstValue("status").orElse("Connection error."));
-      return null;
+      throw new GitHubApiException("Connection error. " + response.statusCode());
     } catch (InterruptedException | ExecutionException e) {
       throw new GitHubApiException("Connection error. " + e.getMessage());
     }

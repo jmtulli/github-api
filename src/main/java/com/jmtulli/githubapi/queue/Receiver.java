@@ -19,7 +19,7 @@ public class Receiver {
 
   public void listen(Channel channel) {
     try {
-      channel.queueDeclare(gitRepository, false, true, true, null);
+      channel.queueDeclare(gitRepository, false, false, true, null);
       System.out.println("Receiver aguardando mensagens..." + gitRepository);
       DeliverCallback deliverCallback = (consumerTag, delivery) -> {
         String message = new String(delivery.getBody(), "UTF-8");
