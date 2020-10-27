@@ -15,6 +15,7 @@ import com.rabbitmq.client.DeliverCallback;
 
 public class Receiver {
   private static final Map<String, Map<String, FileCounters>> RESULTS = new ConcurrentHashMap<>();
+  public static String errorsFound = null;
   private final String gitUrl;
 
   public Receiver(String gitUrl) {
@@ -53,6 +54,12 @@ public class Receiver {
   }
 
   public static Map<String, FileCounters> getResults(String id) {
+    if (errorsFound != null) {
+      RESULTS.remove(id);
+      String error = errorsFound;
+      errorsFound = null;
+      throw new GitHubApiException("Unexpected error. " + error);
+    }
     return RESULTS.get(id);
   }
 
