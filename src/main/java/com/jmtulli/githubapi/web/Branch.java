@@ -90,8 +90,11 @@ public class Branch {
   }
 
   private void processResultForFile(String fileUrl, Map<String, FileCounters> resultMap) {
+    System.out.println("branch process file: " + fileUrl);
     InputStream response = new Connection(fileUrl).getResponse();
+    System.out.println("branch process file got response: " + fileUrl);
     BufferedReader reader = new BufferedReader(new InputStreamReader(response));
+    System.out.println("branch process file got reader: " + fileUrl);
 
     Optional<FileCounters> counters = parseFileResponse(reader);
 

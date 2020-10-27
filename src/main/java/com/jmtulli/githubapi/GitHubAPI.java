@@ -29,7 +29,7 @@ public class GitHubAPI {
   public static ResponseEntity startProcess(String gitUser, String gitRepository) {
     String gitUrl = URL_GITHUB + "/" + gitUser + "/" + gitRepository;
 
-    System.out.println(gitUrl.substring(URL_GITHUB.length() + 1));
+    System.out.println("API Start url: " + gitUrl);
 
     String id = Integer.toString(gitUrl.hashCode());
     if (id == null)
@@ -37,16 +37,19 @@ public class GitHubAPI {
 
     if (!currentIdList.containsKey(id)) {
       currentIdList.put(id, ProcessStatus.NEW);
+      System.out.println("API novo id " + id);
     }
 
     GitRepository repository = new GitRepository(gitUrl);
 
     if (ProcessStatus.DONE == currentIdList.get(id)) {
+      System.out.println("API id done: " + id);
       return ResponseEntity.ok(repository.getResultMap());
     }
 
     if (repository.isValidGitUrl()) {
       if (ProcessStatus.NEW == currentIdList.get(id)) {
+        System.out.println("API vai iniciar fila novo id " + id);
         Channel channel = Connection.getRabbitChannel();
         new Receiver(gitUrl).listen(channel);
         new Sender(gitUrl).send(id, channel);

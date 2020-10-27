@@ -40,22 +40,24 @@ public class GitRepository {
     return new Connection(gitRepository + URL_ALL_BRANCHES).getResponse() != null;
   }
 
-//  public Map<String, FileCounters> process() {
-    public void process() {
+  public void process() {
+    System.out.println("gitrepo start process repo: " + gitRepository);
     this.branch = new Branch(gitRepository);
     if (resultMap.get(gitRepository) == null) {
+      System.out.println("gitrepo starting resultMap: " + gitRepository);
       resultMap.put(gitRepository, new ConcurrentHashMap<>());
     }
 
     ArrayList<String> allBranches = getAllBranchesNames();
+    System.out.println("gitrepo size allbranches for " + gitRepository + " = " + allBranches.size());
     allBranches.forEach(branchName -> {
       String relativePaths = branch.getBranchPaths(branchName);
       List<String> filesUrl = branch.getFilesUrl(relativePaths, branchName);
+      System.out.println("gitrepo got file url: " + gitRepository);
       branch.processResult(filesUrl, resultMap.get(gitRepository));
+      System.out.println("gitrepo finish process: " + gitRepository);
     });
-    System.out.println("fim process repo " + gitRepository);
-
-//    return resultMap.get(gitRepository);
+    System.out.println("gitrepo fim process all branches repo " + gitRepository);
   }
 
   private ArrayList<String> getAllBranchesNames() {
