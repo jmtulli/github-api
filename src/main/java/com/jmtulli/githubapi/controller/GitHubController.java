@@ -20,7 +20,7 @@ public class GitHubController {
 
   @GetMapping(path = "/{id}")
   public ResponseEntity checkProcess(@PathVariable String id) {
-    return (GitHubAPI.checkProcess(id) != null) ? ResponseEntity.ok(GitHubAPI.checkProcess(id)) : ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Check result on: https://jmtulli-githubapi.herokuapp.com/   http://localhost:8080/" + id);
+    return (GitHubAPI.checkProcess(id) != null) ? ResponseEntity.ok(GitHubAPI.checkProcess(id)) : ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Check result on: https://jmtulli-githubapi.herokuapp.com/" + id);
   }
 
 }

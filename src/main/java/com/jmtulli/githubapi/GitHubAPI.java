@@ -34,7 +34,7 @@ public class GitHubAPI {
     if (GitRepository.isValidGitUrl(gitUrl)) {
       new Receiver(gitUrl).listen();
       new Sender(gitUrl).send(id);
-      return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Check result on: https://jmtulli-githubapi.herokuapp.com/  http://localhost:8080/" + id);
+      return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Check result on: https://jmtulli-githubapi.herokuapp.com/" + id);
     }
     long endTimer = System.nanoTime();
     System.out.println("Time: " + (endTimer - startTimer));
