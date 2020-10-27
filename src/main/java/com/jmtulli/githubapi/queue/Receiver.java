@@ -1,51 +1,59 @@
 package com.jmtulli.githubapi.queue;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
 
+import com.jmtulli.githubapi.data.FileCounters;
+import com.jmtulli.githubapi.exception.GitHubApiException;
+import com.jmtulli.githubapi.web.GitRepository;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
 public class Receiver {
+  private static final Map<String, Map<String, FileCounters>> RESULTS = new ConcurrentHashMap<>();
+  private final String gitUrl;
 
-  public void start() {
-    ConnectionFactory factory = new ConnectionFactory();
-    try {
-      factory.setUri("amqp://qgkjffns:0aqoD3P-WBsvN9EPQLfJb-HBPtVt7wBa@coyote.rmq.cloudamqp.com/qgkjffns");
-    } catch (KeyManagementException | NoSuchAlgorithmException | URISyntaxException e1) {
-      System.out.println("URI erro");
-      e1.printStackTrace();
-    }
+  public Receiver(String gitUrl) {
+    this.gitUrl = gitUrl;
+  }
+
+  public void listen() {
+    ConnectionFactory factory = RabbitFactory.getFactory();
+
     try {
       Connection connection = factory.newConnection();
       Channel channel = connection.createChannel();
-      channel.queueDeclare("testeQName", false, false, false, null);
+      channel.queueDeclare(gitUrl, false, false, true, null);
       System.out.println("aguardando mensagens...");
       DeliverCallback deliverCallback = (consumerTag, delivery) -> {
         String message = new String(delivery.getBody(), "UTF-8");
         System.out.println("mensagem recebida: " + message);
-        doWork(message);
+        doWork(gitUrl, message);
       };
-      channel.basicConsume("testeQName", deliverCallback, consumerTag -> {
+      channel.basicConsume(gitUrl, deliverCallback, consumerTag -> {
       });
     } catch (IOException | TimeoutException e) {
-      System.out.println("Connection erro");
-      e.printStackTrace();
+      throw new GitHubApiException("Error getting queue. " + e.getMessage());
     }
   }
 
-  public static void doWork(String task) {
-    System.out.println("Do work - " + Thread.currentThread().getName() + " - Task " + task);
-    try {
-      Thread.sleep(3000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+  private void doWork(String gitUrl, String id) {
+    System.out.println("Do work - " + Thread.currentThread().getName() + " - Task " + gitUrl);
+    RESULTS.put(id, new GitRepository(gitUrl).process());
+    System.out.println("Fim " + Thread.currentThread().getName() + " - id: " + id);
+    // Map<String, FileCounters> map = new GitRepository(gitUrl).process();
+    // map.entrySet().forEach(entry -> {
+    // System.out.println(entry.getKey() + ": Lines = " + entry.getValue().getLines() + "; Size = "
+    // + entry.getValue().getSize());
+    // });
+  }
+
+  public static Map<String, FileCounters> getResults(String id) {
+    return RESULTS.get(id);
   }
 
 }

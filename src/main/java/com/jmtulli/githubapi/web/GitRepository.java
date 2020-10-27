@@ -35,6 +35,10 @@ public class GitRepository {
     this.gitRepository = gitRepository;
   }
 
+  public static boolean isValidGitUrl(String url) {
+    return new Connection(url + URL_ALL_BRANCHES).getResponse() != null;
+  }
+
   public Map<String, FileCounters> process() {
     this.branch = new Branch(gitRepository);
     ArrayList<String> allBranches = getAllBranchesNames();
@@ -43,11 +47,6 @@ public class GitRepository {
       List<String> filesUrl = branch.getFilesUrl(relativePaths, branchName);
       branch.processResult(filesUrl, resultMap);
     });
-
-    // resultMap.entrySet().forEach(entry -> {
-    // System.out.println(entry.getKey() + ": Lines = " + entry.getValue().getLines() + "; Size = "
-    // + entry.getValue().getSize());
-    // });
 
     return resultMap;
   }
@@ -59,24 +58,20 @@ public class GitRepository {
     String lineReader;
 
     InputStream response = new Connection(gitRepository + URL_ALL_BRANCHES).getResponse();
+    BufferedReader reader = new BufferedReader(new InputStreamReader(response));
 
-    if (response != null) {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(response));
-      try {
-        while ((lineReader = reader.readLine()) != null) {
-          if (lineReader.contains(PATTERN_CLASS_BRANCH_NAME)) {
-            matcher = pattern.matcher(lineReader);
-            if (matcher.find()) {
-              allBranches.add(matcher.group(1));
-            }
+    try {
+      while ((lineReader = reader.readLine()) != null) {
+        if (lineReader.contains(PATTERN_CLASS_BRANCH_NAME)) {
+          matcher = pattern.matcher(lineReader);
+          if (matcher.find()) {
+            allBranches.add(matcher.group(1));
           }
         }
-      } catch (Exception e) {
-        e.printStackTrace();
-        throw new GitHubApiException(e.getMessage());
       }
-    } else {
-      throw new GitHubApiException("Error getting branches of repository " + gitRepository + ".");
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new GitHubApiException("Error getting branches names. " + e.getMessage());
     }
 
     return allBranches;

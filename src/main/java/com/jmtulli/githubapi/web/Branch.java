@@ -17,8 +17,6 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,51 +39,41 @@ public class Branch {
   }
 
   private String getTreeList(String branchName) {
-    String treeList = null;
+    String treeList = "";
     Pattern pattern = Pattern.compile(PATTERN_TREE_LIST);
     Matcher matcher;
     String lineReader;
 
     InputStream response = new Connection(gitRepository + URL_FIND + branchName).getResponse();
+    BufferedReader reader = new BufferedReader(new InputStreamReader(response));
 
-    if (response != null) {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(response));
-
-      try {
-        while ((lineReader = reader.readLine()) != null) {
-          if (lineReader.contains(PATTERN_CLASS_TREE_FINDER)) {
-            matcher = pattern.matcher(lineReader);
-            if (matcher.find()) {
-              treeList = matcher.group(1);
-            }
+    try {
+      while ((lineReader = reader.readLine()) != null) {
+        if (lineReader.contains(PATTERN_CLASS_TREE_FINDER)) {
+          matcher = pattern.matcher(lineReader);
+          if (matcher.find()) {
+            treeList = matcher.group(1);
           }
         }
-      } catch (Exception e) {
-        throw new GitHubApiException(e.getMessage());
       }
-    } else {
-      throw new GitHubApiException("Error getting file tree list of repository " + gitRepository + ".");
+    } catch (Exception e) {
+      throw new GitHubApiException("Error getting file tree list. " + e.getMessage());
     }
 
     return treeList;
   }
 
   private String getPaths(String fileTree) {
-    String filesPath = null;
+    String filesPath = "";
 
     InputStream response = new Connection(URL_GITHUB + fileTree, HEADER_NAME, HEADER_VALUE).getResponse();
+    BufferedReader reader = new BufferedReader(new InputStreamReader(response));
 
-    if (response != null) {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(response));
-
-      try {
-        filesPath = reader.readLine();
-      } catch (Exception e) {
-        e.printStackTrace();
-        throw new GitHubApiException(e.getMessage());
-      }
-    } else {
-      throw new GitHubApiException("Error getting file paths of repository " + gitRepository + ".");
+    try {
+      filesPath = reader.readLine();
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new GitHubApiException("Error getting files path. " + e.getMessage());
     }
 
     return filesPath;
@@ -98,43 +86,22 @@ public class Branch {
 
   public void processResult(List<String> filesUrl, Map<String, FileCounters> resultMap) {
     filesUrl.forEach(url -> processResultForFile(url, resultMap));
-    
-//    ExecutorService executor = Executors.newCachedThreadPool();
-//
-//    for (String url : filesUrl) {
-//      System.out.println("files " + url);
-//      executor.submit(() -> new Thread(new Runnable() {
-//        @Override
-//        public void run() {
-//          processResultForFile(url, resultMap);
-//        }
-//      }).start());
-//    }
-
-    System.out.println("fim");
-
   }
 
   private void processResultForFile(String fileUrl, Map<String, FileCounters> resultMap) {
-//    InputStream response = new Connection().getConcurrentResponse(fileUrl);
     InputStream response = new Connection(fileUrl).getResponse();
+    BufferedReader reader = new BufferedReader(new InputStreamReader(response));
 
-    if (response != null) {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(response));
+    Optional<FileCounters> counters = parseFileResponse(reader);
 
-      Optional<FileCounters> counters = parseFileResponse(reader);
-
-      if (counters.isPresent()) {
-        String fileExtension = Utils.getFileExtension(fileUrl);
-        if (resultMap.containsKey(fileExtension)) {
-          resultMap.get(fileExtension).addLines(counters.get().getLines());
-          resultMap.get(fileExtension).addSize(counters.get().getSize());
-        } else {
-          resultMap.put(fileExtension, counters.get());
-        }
+    if (counters.isPresent()) {
+      String fileExtension = Utils.getFileExtension(fileUrl);
+      if (resultMap.containsKey(fileExtension)) {
+        resultMap.get(fileExtension).addLines(counters.get().getLines());
+        resultMap.get(fileExtension).addSize(counters.get().getSize());
+      } else {
+        resultMap.put(fileExtension, counters.get());
       }
-    } else {
-      throw new GitHubApiException("Error parsing file " + fileUrl + ".");
     }
   }
 
@@ -165,7 +132,7 @@ public class Branch {
         }
       }
     } catch (Exception e) {
-      throw new GitHubApiException(e.getMessage());
+      throw new GitHubApiException("Error parsing response. " + e.getMessage());
     }
     return Optional.empty();
   }
