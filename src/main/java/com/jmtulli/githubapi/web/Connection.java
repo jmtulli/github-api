@@ -53,7 +53,8 @@ public class Connection {
       } else if (response.statusCode() == 404) {
         throw new GitUrlNotFoundException(url.substring(0, url.indexOf(URL_ALL_BRANCHES)));
       }
-      throw new GitHubApiException(response.headers().firstValue("status").orElse("Connection error."));
+//      throw new GitHubApiException(response.headers().firstValue("status").orElse("Connection error."));
+      return null;
     } catch (InterruptedException | ExecutionException e) {
       throw new GitHubApiException("Connection error. " + e.getMessage());
     }
