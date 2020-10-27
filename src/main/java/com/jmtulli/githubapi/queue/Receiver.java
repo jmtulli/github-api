@@ -1,7 +1,12 @@
 package com.jmtulli.githubapi.queue;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
 
@@ -14,7 +19,8 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
 public class Receiver {
-  private static final Map<String, Map<String, FileCounters>> RESULTS = new ConcurrentHashMap<>();
+  private static final Map<String, Map<String, FileCounters>> resultsById = new ConcurrentHashMap<>();
+  private static final Set<String> completedIds = Collections.synchronizedSet(new HashSet<>());
   public static String errorsFound = null;
   private final String gitUrl;
 
@@ -43,8 +49,15 @@ public class Receiver {
   }
 
   private void doWork(String gitUrl, String id) {
-    System.out.println("Do work - " + Thread.currentThread().getName() + " - Task " + gitUrl);
-    RESULTS.put(id, new GitRepository(gitUrl).process());
+    System.out.println("Do work - " + Thread.currentThread().getName() + " - id " + id);
+    GitRepository repository = new GitRepository(gitUrl);
+    completedIds.add(id);
+    if (repository.getResultMap() == null) {
+      // resultsById.put(id, repository.getResultMap());
+      // } else {
+      // resultsById.put(id, repository.process());
+      repository.process();
+    }
     System.out.println("Fim " + Thread.currentThread().getName() + " - id: " + id);
     // Map<String, FileCounters> map = new GitRepository(gitUrl).process();
     // map.entrySet().forEach(entry -> {
@@ -53,14 +66,16 @@ public class Receiver {
     // });
   }
 
-  public static Map<String, FileCounters> getResults(String id) {
+  public static boolean getResults(String id) {
     if (errorsFound != null) {
-      RESULTS.remove(id);
+      // resultsById.remove(id);
       String error = errorsFound;
       errorsFound = null;
+      completedIds.remove(id);
       throw new GitHubApiException("Unexpected error. " + error);
     }
-    return RESULTS.get(id);
+    return completedIds.remove(id);
+    // return resultsById.get(id);
   }
 
 }

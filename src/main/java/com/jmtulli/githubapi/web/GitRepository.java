@@ -27,7 +27,7 @@ import com.jmtulli.githubapi.exception.GitHubApiException;
 
 public class GitRepository {
 
-  private final Map<String, FileCounters> resultMap = new ConcurrentHashMap<>();
+  private static final Map<String, Map<String, FileCounters>> resultMap = new ConcurrentHashMap<>();
   private Branch branch;
   private String gitRepository;
 
@@ -35,20 +35,25 @@ public class GitRepository {
     this.gitRepository = gitRepository;
   }
 
-  public static boolean isValidGitUrl(String url) {
-    return new Connection(url + URL_ALL_BRANCHES).getResponse() != null;
+  public boolean isValidGitUrl() {
+    return new Connection(gitRepository + URL_ALL_BRANCHES).getResponse() != null;
   }
 
   public Map<String, FileCounters> process() {
     this.branch = new Branch(gitRepository);
+    if (resultMap.get(gitRepository) == null) {
+      System.out.println("null");
+      resultMap.put(gitRepository, new ConcurrentHashMap<>());
+    }
+
     ArrayList<String> allBranches = getAllBranchesNames();
     allBranches.forEach(branchName -> {
       String relativePaths = branch.getBranchPaths(branchName);
       List<String> filesUrl = branch.getFilesUrl(relativePaths, branchName);
-      branch.processResult(filesUrl, resultMap);
+      branch.processResult(filesUrl, resultMap.get(gitRepository));
     });
 
-    return resultMap;
+    return resultMap.get(gitRepository);
   }
 
   private ArrayList<String> getAllBranchesNames() {
@@ -75,6 +80,10 @@ public class GitRepository {
     }
 
     return allBranches;
+  }
+
+  public Map<String, FileCounters> getResultMap() {
+    return resultMap.get(gitRepository);
   }
 
 }

@@ -84,8 +84,9 @@ public class Branch {
     return Utils.parsePaths(basePath, relativePaths);
   }
 
-  public void processResult(List<String> filesUrl, Map<String, FileCounters> resultMap) {
+  public Map<String, FileCounters> processResult(List<String> filesUrl, Map<String, FileCounters> resultMap) {
     filesUrl.forEach(url -> processResultForFile(url, resultMap));
+    return resultMap;
   }
 
   private void processResultForFile(String fileUrl, Map<String, FileCounters> resultMap) {
