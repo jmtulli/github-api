@@ -7,17 +7,17 @@ import com.rabbitmq.client.Channel;
 
 public class Sender {
 
-  private final String gitUrl;
+  private final String gitRepository;
 
-  public Sender(String gitUrl) {
-    this.gitUrl = gitUrl;
+  public Sender(String gitRepository) {
+    this.gitRepository = gitRepository;
   }
 
   public void send(String id, Channel channel) {
 
     try {
-      channel.queueDeclare(gitUrl, false, true, true, null);
-      channel.basicPublish("", gitUrl, null, id.getBytes());
+      channel.queueDeclare(gitRepository, false, true, true, null);
+      channel.basicPublish("", gitRepository, null, id.getBytes());
     } catch (IOException e) {
       throw new GitHubApiException("Error sending queue. " + e.getMessage());
     }

@@ -25,11 +25,7 @@ import com.rabbitmq.client.Channel;
 
 public class GitHubAPI {
   private static final ConcurrentMap<String, ProcessStatus> currentIdList = new ConcurrentHashMap<>();
-  private static Channel channel;
 
-  public static Channel getC() {
-    return channel;
-  }
   public static ResponseEntity startProcess(String gitUser, String gitRepositoryName) {
     String gitRepository = URL_GITHUB + "/" + gitUser + "/" + gitRepositoryName;
 
@@ -54,7 +50,7 @@ public class GitHubAPI {
     if (repository.isValidGitUrl()) {
       if (ProcessStatus.NEW == currentIdList.get(id)) {
         System.out.println("API vai iniciar fila novo id " + id);
-        channel = Connection.getRabbitChannel();
+        Channel channel = Connection.getRabbitChannel();
         new Receiver(gitRepository).listen(channel);
         new Sender(gitRepository).send(id, channel);
       }

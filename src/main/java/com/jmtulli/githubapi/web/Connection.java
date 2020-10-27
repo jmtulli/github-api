@@ -42,6 +42,12 @@ public class Connection {
     try {
       CompletableFuture<HttpResponse<InputStream>> futureResponse = httpClient.sendAsync(request, BodyHandlers.ofInputStream());
       HttpResponse<InputStream> response = futureResponse.get();
+      if (response.statusCode() != 200) {
+        System.out.println("\n\nConnection retry\n\n");
+        futureResponse = httpClient.sendAsync(request, BodyHandlers.ofInputStream());
+        response = futureResponse.get();
+      }
+      
       if (response.statusCode() == 200) {
         return response.body();
       } else if (response.statusCode() == 404) {

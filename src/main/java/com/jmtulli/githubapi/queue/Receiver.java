@@ -11,22 +11,22 @@ import com.rabbitmq.client.DeliverCallback;
 
 public class Receiver {
   public static String errorsFound = null;
-  private final String gitUrl;
+  private final String gitRepository;
 
-  public Receiver(String gitUrl) {
-    this.gitUrl = gitUrl;
+  public Receiver(String gitRepository) {
+    this.gitRepository = gitRepository;
   }
 
   public void listen(Channel channel) {
     try {
-      channel.queueDeclare(gitUrl, false, true, true, null);
-      System.out.println("Receiver aguardando mensagens..." + gitUrl);
+      channel.queueDeclare(gitRepository, false, true, true, null);
+      System.out.println("Receiver aguardando mensagens..." + gitRepository);
       DeliverCallback deliverCallback = (consumerTag, delivery) -> {
         String message = new String(delivery.getBody(), "UTF-8");
         System.out.println("Receiver mensagem recebida: " + message);
-        doWork(gitUrl, message);
+        doWork(gitRepository, message);
       };
-      channel.basicConsume(gitUrl, deliverCallback, consumerTag -> {
+      channel.basicConsume(gitRepository, deliverCallback, consumerTag -> {
       });
     } catch (IOException e) {
       throw new GitHubApiException("Error getting queue. " + e.getMessage());

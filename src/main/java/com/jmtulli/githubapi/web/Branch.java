@@ -12,23 +12,17 @@ import static com.jmtulli.githubapi.util.ApplicationConstants.URL_FIND;
 import static com.jmtulli.githubapi.util.ApplicationConstants.URL_GITHUB;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.jmtulli.githubapi.GitHubAPI;
 import com.jmtulli.githubapi.data.FileCounters;
 import com.jmtulli.githubapi.exception.GitHubApiException;
-import com.jmtulli.githubapi.queue.Receiver;
-import com.jmtulli.githubapi.queue.Sender;
 import com.jmtulli.githubapi.util.Utils;
-import com.rabbitmq.client.Channel;
 
 public class Branch {
 
@@ -91,23 +85,7 @@ public class Branch {
   }
 
   public Map<String, FileCounters> processResult(List<String> filesUrl, Map<String, FileCounters> resultMap) {
-    // filesUrl.forEach(url -> processResultForFile(url, resultMap));
-    for (int i = 0; i < filesUrl.size(); i++) {
-      if (i % 50 == 0) {
-        System.out.println("\nsleep\n");
-        try {
-          Channel channel = GitHubAPI.getC();
-          channel.close();
-          channel = Connection.getRabbitChannel();
-          new Receiver(gitRepository).listen(channel);
-          new Sender(gitRepository).send(Integer.toString(gitRepository.hashCode()), channel);
-          Thread.sleep(1000);
-        } catch (InterruptedException | IOException | TimeoutException e) {
-          e.printStackTrace();
-        }
-      }
-      processResultForFile(filesUrl.get(i), resultMap);
-    }
+    filesUrl.forEach(url -> processResultForFile(url, resultMap));
     return resultMap;
   }
 
