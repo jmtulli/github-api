@@ -16,7 +16,7 @@ public class Sender {
   public void send(String id, Channel channel) {
 
     try {
-      channel.queueDeclare(gitUrl, false, false, true, null);
+      channel.queueDeclare(gitUrl, false, true, true, null);
       channel.basicPublish("", gitUrl, null, id.getBytes());
     } catch (IOException e) {
       throw new GitHubApiException("Error sending queue. " + e.getMessage());
