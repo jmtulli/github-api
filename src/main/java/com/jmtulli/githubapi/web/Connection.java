@@ -21,7 +21,8 @@ import com.rabbitmq.client.ConnectionFactory;
 
 public class Connection {
 
-  private static final HttpClient httpClient = HttpClient.newBuilder().build();
+//  private static final HttpClient httpClient = HttpClient.newBuilder().build();
+//  private HttpClient httpClient;
   private HttpRequest request;
   private String url;
 
@@ -30,6 +31,7 @@ public class Connection {
   }
 
   public Connection(String url, String headerName, String headerValue) {
+//    this.httpClient = HttpClient.newBuilder().build();
     this.url = url;
     if (headerName != null && headerValue != null) {
       this.request = HttpRequest.newBuilder().uri(URI.create(url)).setHeader(headerName, headerValue).build();
@@ -40,7 +42,8 @@ public class Connection {
 
   public InputStream getResponse() {
     try {
-      CompletableFuture<HttpResponse<InputStream>> futureResponse = httpClient.sendAsync(request, BodyHandlers.ofInputStream());
+//      CompletableFuture<HttpResponse<InputStream>> futureResponse = httpClient.sendAsync(request, BodyHandlers.ofInputStream());
+      CompletableFuture<HttpResponse<InputStream>> futureResponse = HttpClient.newBuilder().build().sendAsync(request, BodyHandlers.ofInputStream());
       HttpResponse<InputStream> response = futureResponse.get();
       if (response.statusCode() == 200) {
         return response.body();
