@@ -24,7 +24,7 @@ https://jmtulli-githubapi.herokuapp.com/jmtulli/github-api
 ```
 And the return is like:
 ```json
-{"java":{"lines":2018,"size":68148.4},"gitignore":{"lines":66,"size":788.0},"xml":{"lines":170,"size":4956.16},"md":{"lines":19,"size":820.0},"NO_EXTENSION":{"lines":620,"size":20131.84},"jar":{"lines":0,"size":5.00135936E7},"cmd":{"lines":364,"size":13209.6},"properties":{"lines":6,"size":482.0}}
+{"java":{"lines":2018,"size":68261.04},"gitignore":{"lines":66,"size":788.0},"xml":{"lines":170,"size":4956.16},"md":{"lines":34,"size":1638.4},"NO_EXTENSION":{"lines":620,"size":20131.84},"jar":{"lines":0,"size":5.00135936E7},"cmd":{"lines":364,"size":13209.6},"properties":{"lines":6,"size":482.0}}
 ```
 
 ---
