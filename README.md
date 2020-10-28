@@ -7,12 +7,15 @@ Develop an API that returns the total number of lines and the total number of by
 
 ---
 
-API basic Usage:
-Make a GET request to the url pattern: `https://jmtulli-githubapi.herokuapp.com/{git-owner}/{git-name}` <br>
+**API basic usage**<br/>
+Make a GET request to the url pattern: `https://jmtulli-githubapi.herokuapp.com/{git-owner}/{git-name}`<br/>
 *Where `git-owner` is the owner of the repository and `git-name` is the name of a **public** git hub repository.*
 
+**Expected returns**<br/>
+During the execution and processing of the files of the repository, a `HTTP STATUS 307` is expected.<br/>
+After the result set is completed, the return should be a JSON with the quantity of lines and the size *(in bytes)* of all the files of the repository, summed up by their extensions, along with the `HTTP STATUS 200`.
 
-
+---
 
 DEVELOPED BY: José Marcos Tulli [![LinkedIn](https://icons.iconarchive.com/icons/danleech/simple/16/linkedin-icon.png "LinkedIn")](https://www.linkedin.com/in/josetulli) [![LinkedIn](https://icons.iconarchive.com/icons/papirus-team/papirus-apps/16/github-icon.png "GitHub")](https://github.com/jmtulli)
 
