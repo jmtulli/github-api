@@ -17,6 +17,6 @@ public final class ApplicationConstants {
   public static final String URL_BLOB = "/blob/";
   public static final String URL_FIND = "/find/";
   public static final String URL_GITHUB = "https://github.com";
-  public static final String URL_GITHUB_API = "https://github.com/jmtulli/github-api#readme";
+  public static final String URL_GITHUB_API = "https://github.com/jmtulli/github-api#github-api";
 
 }
