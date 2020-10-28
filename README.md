@@ -6,6 +6,7 @@
 Develop an API that returns the total number of lines and the total number of bytes of all the files of a given public Github repository, grouped by file extension.*
 
 ---
+## Developed by: José Marcos Tulli [![LinkedIn](https://icons.iconarchive.com/icons/danleech/simple/16/linkedin-icon.png "LinkedIn")](https://www.linkedin.com/in/josetulli) [![LinkedIn](https://icons.iconarchive.com/icons/papirus-team/papirus-apps/16/github-icon.png "GitHub")](https://github.com/jmtulli)<br/>
 
 ### API basic usage
 Make a GET request to the url pattern: `https://jmtulli-githubapi.herokuapp.com/{git-owner}/{git-name}`<br/>
@@ -28,7 +29,3 @@ And the return is like:
 ```
 
 ---
-
-DEVELOPED BY: José Marcos Tulli [![LinkedIn](https://icons.iconarchive.com/icons/danleech/simple/16/linkedin-icon.png "LinkedIn")](https://www.linkedin.com/in/josetulli) [![LinkedIn](https://icons.iconarchive.com/icons/papirus-team/papirus-apps/16/github-icon.png "GitHub")](https://github.com/jmtulli)
-
-
