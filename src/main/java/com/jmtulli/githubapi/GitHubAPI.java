@@ -54,7 +54,7 @@ public class GitHubAPI {
         new Receiver(gitRepository).listen(channel);
         new Sender(gitRepository).send(id, channel);
       }
-      return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Check progress on: https://jmtulli-githubapi.herokuapp.com/" + id);
+      return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Refresh this page or check progress on: https://jmtulli-githubapi.herokuapp.com/" + id);
     }
 
     throw new GitHubApiException("Git repository " + gitRepository + " not found.");
@@ -70,7 +70,7 @@ public class GitHubAPI {
       return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing completed... Make the original request again to get the results.");
     }
 
-    return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Check progress on: https://jmtulli-githubapi.herokuapp.com/" + id);
+    return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).body("Processing requests... Go back to original request or check progress on: https://jmtulli-githubapi.herokuapp.com/" + id);
   }
 
   public static ProcessStatus getStatus(String id) {
