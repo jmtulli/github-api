@@ -8,8 +8,8 @@ Develop an API that returns the total number of lines and the total number of by
 ---
 
 API basic Usage:
-Make a GET request to the url pattern: `https://jmtulli-githubapi.herokuapp.com/{git-user}/{git-repository}`
-> Where *git-user* is the owner of the repository and *git-repository* is the name of a **public** git hub repository.
+Make a GET request to the url pattern: `https://jmtulli-githubapi.herokuapp.com/{git-owner}/{git-name}`
+*Where `git-owner` is the owner of the repository and `git-name` is the name of a **public** git hub repository.*
 
 
 
