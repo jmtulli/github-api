@@ -15,7 +15,8 @@ Make a GET request to the url pattern: `https://jmtulli-githubapi.herokuapp.com/
 
 ### Expected returns
 During the execution and processing of the files of the repository, a `HTTP STATUS 307` is expected.<br/>
-After the result set is completed, the return should be a JSON with the quantity of lines and the size *(in bytes)* of all the files of the repository, summed up by their extensions, along with the `HTTP STATUS 200`.
+After the result set is completed, the return should be a JSON with the quantity of lines and the size *(in bytes)* of all the files of the repository, summed up by their extensions, along with the `HTTP STATUS 200`.<br/>
+If a wrong pair of /*git-owner*/*git-name* is provided, then the return is a `HTTP STATUS 404`.<br/>
 
 ### Usage example
 To get the result for *this* repository make a GET request to:
